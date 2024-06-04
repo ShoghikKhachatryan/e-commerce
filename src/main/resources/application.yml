@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: e-commerce
+  datasource:
+    url: jdbc:postgresql://localhost:5434/e_commerce_db
+    username: postgres
+    password: 1234!
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
