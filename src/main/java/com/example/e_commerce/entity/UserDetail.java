@@ -20,7 +20,6 @@ public class UserDetail {
     @Column(nullable = false)
     private String fullName;
 
-    @MapsId
     @OneToOne(mappedBy = "userDetail")
     @JoinColumn(name = "user_id")
     private User user;
