@@ -1,6 +1,5 @@
 package com.example.e_commerce.service;
 
-import com.example.e_commerce.entity.User;
 import com.example.e_commerce.entity.UserDetail;
 import com.example.e_commerce.repository.UserDetailRepository;
 import org.springframework.stereotype.Service;
