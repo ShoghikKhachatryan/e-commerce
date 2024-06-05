@@ -1,6 +1,5 @@
 package com.example.e_commerce.service;
 
-import com.example.e_commerce.entity.User;
 import com.example.e_commerce.entity.UserDetail;
 import com.example.e_commerce.repository.UserDetailRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
