@@ -1,0 +1,2 @@
+ALTER TABLE users RENAME COLUMN pasword TO password;
+ALTER TABLE users ALTER COLUMN password SET NOT NULL;
