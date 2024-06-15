@@ -1,9 +1,7 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
-CREATE TABLE users(
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
-    pasword VARCHAR(255) NOT NULL
+    password VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE user_detail (
@@ -13,7 +11,7 @@ CREATE TABLE user_detail (
 );
 
 CREATE TABLE product (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY,
     name VARCHAR(255) UNIQUE NOT NULL,
-    price NUMERIC(15,2)
+    price NUMERIC(15,2) NOT NULL
 );

@@ -1,9 +1,9 @@
-package com.example.e_commerce.service;
+package com.example.ecommerce.service;
 
-import com.example.e_commerce.entity.User;
-import com.example.e_commerce.repository.UserRepository;
+import com.example.ecommerce.entity.User;
+import com.example.ecommerce.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,14 +26,11 @@ class UserServiceTest {
     @InjectMocks
     private UserService mockedUserService;
 
-    private User user;
-
-    @BeforeEach
-    void setUp() {
-        user = new User();
-        user.setUsername("Leo21");
-        user.setPassword("1234!");
-    }
+    private final User user = User.builder()
+            .id(UUID.fromString("08617a12-c5ab-4910-a9e6-8d50fe64ab3e"))
+            .username("Leo21")
+            .password("1234!")
+            .build();
 
     @AfterEach
     void tearDown() {
@@ -59,11 +57,20 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById() {
+    void getUserByExistedId() {
         UUID id = user.getId();
         when(mockedUserRepository.findById(id)).thenReturn(Optional.of(user));
 
         mockedUserService.getUser(id);
+
+        verify(mockedUserRepository).findById(id);
+    }
+
+    @Test
+    void getUserByNotExistedId() {
+        UUID id = user.getId();
+        Assertions.assertThrows(NoSuchElementException.class,
+                () -> mockedUserService.getUser(id));
 
         verify(mockedUserRepository).findById(id);
     }
@@ -79,20 +86,30 @@ class UserServiceTest {
     }
 
     @Test
-    void getUsers() {
+    void getAllUsers() {
         when(mockedUserRepository.findAll()).thenReturn(List.of(user));
 
-        mockedUserService.getUsers();
+        mockedUserService.getAllUsers();
 
         verify(mockedUserRepository).findAll();
     }
 
     @Test
-    void updateUser() {
+    void updateExistedUser() {
+        when(mockedUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
         when(mockedUserRepository.save(user)).thenReturn(user);
 
         mockedUserService.updateUser(user);
 
+        verify(mockedUserRepository).findById(user.getId());
         verify(mockedUserRepository).save(user);
+    }
+
+    @Test
+    void updateNotExistedUser() {
+        Assertions.assertThrows(NoSuchElementException.class,
+                () ->  mockedUserService.updateUser(user));
+
+        verify(mockedUserRepository).findById(user.getId());
     }
 }

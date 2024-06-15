@@ -1,4 +1,4 @@
-package com.example.e_commerce.entity;
+package com.example.ecommerce.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserDetail {
 
     @Id

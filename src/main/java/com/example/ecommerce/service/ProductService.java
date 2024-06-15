@@ -1,7 +1,9 @@
-package com.example.e_commerce.service;
+package com.example.ecommerce.service;
 
-import com.example.e_commerce.entity.Product;
-import com.example.e_commerce.repository.ProductRepository;
+import com.example.ecommerce.entity.Product;
+import com.example.ecommerce.exception.EntityNotFoundException;
+import com.example.ecommerce.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,16 +17,19 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    @Transactional
     public void createProduct(Product product) {
         productRepository.save(product);
     }
 
+    @Transactional
     public void deleteProductById(UUID id) {
+        getProduct(id);
         productRepository.deleteById(id);
     }
 
     public Product getProduct(UUID id) {
-        return productRepository.findById(id).get();
+        return productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
     }
 
     public Product getProduct(String name) {
@@ -35,7 +40,9 @@ public class ProductService {
         return productRepository.findAll();
     }
 
+    @Transactional
     public void updateProduct(Product product) {
+        getProduct(product.getId());
         productRepository.save(product);
     }
 }

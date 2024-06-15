@@ -1,7 +1,8 @@
-package com.example.e_commerce.service;
+package com.example.ecommerce.service;
 
-import com.example.e_commerce.entity.UserDetail;
-import com.example.e_commerce.repository.UserDetailRepository;
+import com.example.ecommerce.entity.UserDetail;
+import com.example.ecommerce.exception.EntityNotFoundException;
+import com.example.ecommerce.repository.UserDetailRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,23 +17,16 @@ public class UserDetailService {
         this.userDetailRepository = userDetailRepository;
     }
 
-    public void createUserDetail(UserDetail userDetail) {
-        userDetailRepository.save(userDetail);
-    }
-
-    public void deleteUserDetailById(UUID id) {
-        userDetailRepository.deleteById(id);
-    }
-
     public UserDetail getUserDetail(UUID id) {
-        return userDetailRepository.findById(id).get();
+        return userDetailRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id));
     }
 
-    public List<UserDetail> getUsers() {
+    public List<UserDetail> getAllUserDetails() {
         return userDetailRepository.findAll();
     }
 
     public void updateUserDetail(UserDetail userDetail) {
+        getUserDetail(userDetail.getId());
         userDetailRepository.save(userDetail);
     }
 }

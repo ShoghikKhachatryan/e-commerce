@@ -1,4 +1,4 @@
-package com.example.e_commerce.entity;
+package com.example.ecommerce.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,10 +14,8 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    //@NotNull it is deprecated
     @Column(unique = true, nullable = false)
     private String username;
 

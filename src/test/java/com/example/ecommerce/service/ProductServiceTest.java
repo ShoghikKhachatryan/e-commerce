@@ -1,9 +1,9 @@
-package com.example.e_commerce.service;
+package com.example.ecommerce.service;
 
-import com.example.e_commerce.entity.Product;
-import com.example.e_commerce.repository.ProductRepository;
+import com.example.ecommerce.entity.Product;
+import com.example.ecommerce.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,14 +27,11 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService mockedProductService;
 
-    private Product product;
-
-    @BeforeEach
-    void setUp() {
-        product = new Product();
-        product.setName("TV");
-        product.setPrice(BigDecimal.valueOf(100.5));
-    }
+    private Product product = Product.builder()
+            .id(UUID.fromString("8eafdf29-ef2e-4872-9a27-83bee1f3d92c"))
+            .name("TV")
+            .price(BigDecimal.valueOf(100.5))
+            .build();
 
     @AfterEach
     void tearDown() {
@@ -60,11 +58,21 @@ class ProductServiceTest {
     }
 
     @Test
-    void getProductById() {
+    void getProductByExistedId() {
         UUID id = product.getId();
         when(mockedProductRepository.findById(id)).thenReturn(Optional.of(product));
 
         mockedProductService.getProduct(id);
+
+        verify(mockedProductRepository).findById(id);
+    }
+
+    @Test
+    void getProductByNotExsitedId() {
+        UUID id = product.getId();
+
+        Assertions.assertThrows(NoSuchElementException.class,
+                () -> mockedProductService.getProduct(id));
 
         verify(mockedProductRepository).findById(id);
     }
@@ -80,7 +88,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void getProducts() {
+    void getAllProducts() {
         when(mockedProductRepository.findAll()).thenReturn(List.of(product));
 
         mockedProductService.getProducts();
@@ -89,11 +97,21 @@ class ProductServiceTest {
     }
 
     @Test
-    void updateProduct() {
+    void updateProductByExsitedId() {
+        when(mockedProductRepository.findById(product.getId())).thenReturn(Optional.ofNullable(product));
         when(mockedProductRepository.save(product)).thenReturn(product);
 
         mockedProductService.updateProduct(product);
 
         verify(mockedProductRepository).save(product);
+        verify(mockedProductRepository).findById(product.getId());
+    }
+
+    @Test
+    void updateProductByNotExistedId() {
+        Assertions.assertThrows(NoSuchElementException.class,
+                () -> mockedProductService.updateProduct(product));
+
+        verify(mockedProductRepository).findById(product.getId());
     }
 }
