@@ -13,8 +13,6 @@ import java.util.UUID;
 @RequestMapping("/user-details")
 public class UserDetailController {
 
-    private static final String USER_DETAILS_PATH = "/user-details";
-
     private static final String USER_DETAIL_UUID_PATH = "/{userUuid}";
 
     private final UserDetailService userDetailService;

@@ -1,6 +1,6 @@
-package com.example.ecommerce.entity;
+package com.example.ecommerce.dto.product;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,18 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product {
-
-    @Id
-    private UUID id;
-
+public class ProductDto {
     @Column(unique = true, nullable = false)
     private String name;
 
