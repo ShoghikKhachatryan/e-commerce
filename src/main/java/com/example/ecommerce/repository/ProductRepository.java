@@ -13,6 +13,8 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     Product findProductByName(String name);
 
+    Boolean existsByName(String name);
+
     @Modifying
     @Query("Update Product p set p.price = :price where p.id = :id")
     void updateProductPriceById(UUID id, BigDecimal price);

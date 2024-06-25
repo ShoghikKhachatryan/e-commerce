@@ -1,17 +1,22 @@
 package com.example.ecommerce.controller;
 
+import com.example.ecommerce.dto.userDetail.UpdateUserDetailDto;
+import com.example.ecommerce.dto.userDetail.UserDetailDto;
 import com.example.ecommerce.entity.UserDetail;
 import com.example.ecommerce.service.UserDetailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/user-details")
 public class UserDetailController {
+
+    private static final String USER_DETAIL_PATH = "/user-details";
 
     private static final String USER_DETAIL_UUID_PATH = "/{userUuid}";
 
@@ -22,18 +27,22 @@ public class UserDetailController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDetail>> getAllUserDetails() {
-        return ResponseEntity.ok(userDetailService.getAllUserDetails());
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserDetailDto> getAllUserDetails() {
+        return userDetailService.getAllUserDetails();
     }
 
     @GetMapping(USER_DETAIL_UUID_PATH)
-    public ResponseEntity<UserDetail> getUserDetail(@PathVariable UUID id) {
-        return ResponseEntity.ok(userDetailService.getUserDetail(id));
+    @ResponseStatus(HttpStatus.OK)
+    public UserDetailDto getUserDetail(@PathVariable UUID id) {
+        return userDetailService.getUserDetail(id);
     }
 
     @PutMapping(USER_DETAIL_UUID_PATH)
-    @ResponseStatus(HttpStatus.OK)
-    public void updateUserDetail(@RequestBody UserDetail userDetail) {
-        userDetailService.updateUserDetail(userDetail);
+    public ResponseEntity<UserDetailDto> updateUserDetail(@PathVariable UUID id, @RequestBody UpdateUserDetailDto updateUserDetailDto) {
+        updateUserDetailDto.setId(id);
+        UserDetailDto userDetailDto = userDetailService.updateUserDetail(updateUserDetailDto);
+        URI location = URI.create(USER_DETAIL_PATH + "/" + userDetailDto.getId());
+        return ResponseEntity.status(HttpStatus.OK).location(location).body(userDetailDto);
     }
 }

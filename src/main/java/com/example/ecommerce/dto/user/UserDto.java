@@ -1,30 +1,30 @@
-package com.example.ecommerce.entity;
+package com.example.ecommerce.dto.user;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
+import com.example.ecommerce.dto.userDetail.UserDetailDto;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
-
+public class UserDto {
     @Id
     private UUID id;
 
     @Column(unique = true)
     @NotBlank
-    private String name;
+    private String username;
+
+    @NotBlank
+    private String password;
 
     @NotNull
-    @Min(0)
-    private BigDecimal price;
+    private UserDetailDto userDetailDto;
 }

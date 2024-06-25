@@ -1,6 +1,7 @@
 package com.example.ecommerce.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.UUID;
@@ -10,19 +11,25 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
 
     @Id
     private UUID id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
+    @NotBlank
     private String username;
 
-    @Column(nullable = false)
+    @NotBlank
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private UserDetail userDetail;
+
+    public User(UUID userId, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
 }

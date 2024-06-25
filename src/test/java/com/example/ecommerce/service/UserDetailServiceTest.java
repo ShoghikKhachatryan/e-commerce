@@ -1,7 +1,8 @@
 package com.example.ecommerce.service;
 
-import com.example.ecommerce.entity.User;
+import com.example.ecommerce.dto.userDetail.UpdateUserDetailDto;
 import com.example.ecommerce.entity.UserDetail;
+import com.example.ecommerce.exception.EntityNotFoundException;
 import com.example.ecommerce.repository.UserDetailRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,18 +25,11 @@ class UserDetailServiceTest {
     @InjectMocks
     private UserDetailService mockedUserDetailService;
 
-    private final User user = User.builder()
-            .id(UUID.fromString("08617a12-c5ab-4910-a9e6-8d50fe64ab3e"))
-            .username("Leo21")
-            .password("1234!")
-            .build();
+    private final UUID userId = UUID.fromString("08617a12-c5ab-4910-a9e6-8d50fe64ab3e");
 
-    private final UserDetail userDetail = new UserDetail(user.getId(), "Leo Deo", user);
+    private final UserDetail userDetail = new UserDetail(userId, "Leo Deo");
 
-    @BeforeEach
-    void setUpCheck() {
-        Assertions.assertEquals(user.getId(), userDetail.getId());
-    }
+    //private final UserDetailDto userDetailDto = new UserDetail(userId, "Leo Deo");
 
     @AfterEach
     void tearDown() {
@@ -45,7 +38,6 @@ class UserDetailServiceTest {
 
     @Test
     void getUserDetailByExsitedId() {
-        UUID userId = userDetail.getId();
         when(mockedUserDetailRepository.findById(userId)).thenReturn(Optional.of(userDetail));
 
         mockedUserDetailService.getUserDetail(userId);
@@ -55,9 +47,8 @@ class UserDetailServiceTest {
 
     @Test
     void getUserDetailByNotExsitedId() {
-        UUID userId = userDetail.getId();
 
-        Assertions.assertThrows(NoSuchElementException.class,
+        Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockedUserDetailService.getUserDetail(userId));
 
         verify(mockedUserDetailRepository).findById(userId);
@@ -74,20 +65,25 @@ class UserDetailServiceTest {
 
     @Test
     void updateUserDetailByExsitedId() {
-        when(mockedUserDetailRepository.save(userDetail)).thenReturn(userDetail);
-        when(mockedUserDetailRepository.findById(userDetail.getId())).thenReturn(Optional.of(userDetail));
+        String fullName = userDetail.getFullName();
+        UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(userId, fullName);
 
-        mockedUserDetailService.updateUserDetail(userDetail);
+        when(mockedUserDetailRepository.findById(userId)).thenReturn(Optional.of(userDetail));
+        doNothing().when(mockedUserDetailRepository).updateFullName(userId, fullName);
 
-        verify(mockedUserDetailRepository).save(userDetail);
+        mockedUserDetailService.updateUserDetail(updateUserDetailDto);
+
+        verify(mockedUserDetailRepository).updateFullName(userId, fullName);
         verify(mockedUserDetailRepository).findById(userDetail.getId());
     }
 
     @Test
     void updateUserDetailByNotExsitedId() {
-        Assertions.assertThrows(NoSuchElementException.class,
-                () -> mockedUserDetailService.updateUserDetail(userDetail));
+        UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(userId, userDetail.getFullName());
 
-        verify(mockedUserDetailRepository).findById(userDetail.getId());
+        Assertions.assertThrows(EntityNotFoundException.class,
+                () -> mockedUserDetailService.updateUserDetail(updateUserDetailDto));
+
+        verify(mockedUserDetailRepository).findById(userId);
     }
 }

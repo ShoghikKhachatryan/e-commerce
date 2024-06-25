@@ -1,7 +1,7 @@
 package com.example.ecommerce.service;
 
-import com.example.ecommerce.dto.product.ProductDto;
-import com.example.ecommerce.dto.product.UpdatePriceProductDto;
+import com.example.ecommerce.dto.product.CreateProductDto;
+import com.example.ecommerce.dto.product.UpdateProductDto;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.exception.EntityByGivenNameExistException;
 import com.example.ecommerce.exception.EntityNotFoundException;
@@ -30,11 +30,8 @@ class ProductServiceTest {
     @InjectMocks
     private ProductService mockedProductService;
 
-    final private Product product = Product.builder()
-            .id(UUID.fromString("8eafdf29-ef2e-4872-9a27-83bee1f3d92c"))
-            .name("TV")
-            .price(BigDecimal.valueOf(100.5))
-            .build();
+    final UUID id = UUID.fromString("8eafdf29-ef2e-4872-9a27-83bee1f3d92c");
+    final private Product product = new Product(id,"TV", BigDecimal.valueOf(100.5));
 
     @AfterEach
     void tearDown() {
@@ -43,56 +40,55 @@ class ProductServiceTest {
 
     @Test
     void createProductWithInvalidName() {
-        ProductDto productDto = new ProductDto("TV", BigDecimal.valueOf(100.5));
+        CreateProductDto createProductDto = new CreateProductDto("TV", BigDecimal.valueOf(100.5));
 
-        String name = productDto.getName();
-        when(mockedProductRepository.findProductByName(name)).thenReturn(product);
+        String name = createProductDto.getName();
+        when(mockedProductRepository.existsByName(name)).thenReturn(true);
 
         Assertions.assertThrows(EntityByGivenNameExistException.class,
-                () -> mockedProductService.createProduct(productDto));
+                () -> mockedProductService.createProduct(createProductDto));
 
-        verify(mockedProductRepository).findProductByName(name);
+        verify(mockedProductRepository).existsByName(name);
     }
 
     @Test
     void createProductWithUniqueName() {
-        ProductDto productDto = new ProductDto("TV", BigDecimal.valueOf(100.5));
+        CreateProductDto createProductDto = new CreateProductDto("TV", BigDecimal.valueOf(100.5));
 
-        when(mockedProductRepository.findProductByName(productDto.getName())).thenReturn(null);
+        String name = createProductDto.getName();
+
+        when(mockedProductRepository.existsByName(name)).thenReturn(false);
         when(mockedProductRepository.save(any(Product.class))).thenReturn(product);
 
+        mockedProductService.createProduct(createProductDto);
 
-        mockedProductService.createProduct(productDto);
-
-        verify(mockedProductRepository).findProductByName(productDto.getName());
+        verify(mockedProductRepository).existsByName(name);
         verify(mockedProductRepository).save(any(Product.class));
     }
 
     @Test
     void deleteProductById() {
-        UUID id = product.getId();
         doNothing().when(mockedProductRepository).deleteById(id);
-        when(mockedProductRepository.findById(id)).thenReturn(Optional.of(product));
+        when(mockedProductRepository.existsById(id)).thenReturn(true);
 
         mockedProductService.deleteProductById(id);
 
-        verify(mockedProductRepository).findById(id);
+        verify(mockedProductRepository).existsById(id);
         verify(mockedProductRepository).deleteById(id);
     }
 
     @Test
     void deleteProductByInvalidId() {
-        UUID id = product.getId();
+        when(mockedProductRepository.existsById(id)).thenReturn(false);
 
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockedProductService.deleteProductById(id));
 
-        verify(mockedProductRepository).findById(id);
+        verify(mockedProductRepository).existsById(id);
     }
 
     @Test
     void getProductByExistedId() {
-        UUID id = product.getId();
         when(mockedProductRepository.findById(id)).thenReturn(Optional.of(product));
 
         mockedProductService.getProduct(id);
@@ -102,22 +98,10 @@ class ProductServiceTest {
 
     @Test
     void getProductByNotExsitedId() {
-        UUID id = product.getId();
-
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockedProductService.getProduct(id));
 
         verify(mockedProductRepository).findById(id);
-    }
-
-    @Test
-    void getProductByName() {
-        String name = product.getName();
-        when(mockedProductRepository.findProductByName(name)).thenReturn(product);
-
-        mockedProductService.getProduct(name);
-
-        verify(mockedProductRepository).findProductByName(name);
     }
 
     @Test
@@ -131,23 +115,23 @@ class ProductServiceTest {
 
     @Test
     void updateProductByExsitedId() {
-        UpdatePriceProductDto updatePriceProductDto = new UpdatePriceProductDto(BigDecimal.valueOf(90.5));
-        UUID id = product.getId();
-        when(mockedProductRepository.findById(id)).thenReturn(Optional.ofNullable(product));
-        doNothing().when(mockedProductRepository).updateProductPriceById(id, updatePriceProductDto.getPrice());
+        UpdateProductDto updateProductDto = new UpdateProductDto(id, BigDecimal.valueOf(90.5));
 
-        mockedProductService.updateProduct(product.getId(), updatePriceProductDto);
+        when(mockedProductRepository.findById(id)).thenReturn(Optional.of(product));
+        doNothing().when(mockedProductRepository).updateProductPriceById(id, updateProductDto.getPrice());
 
-        verify(mockedProductRepository).updateProductPriceById(id, updatePriceProductDto.getPrice());
+        mockedProductService.updateProduct(updateProductDto);
+
+        verify(mockedProductRepository).updateProductPriceById(id, updateProductDto.getPrice());
         verify(mockedProductRepository).findById(product.getId());
     }
 
     @Test
     void updateProductByNotExistedId() {
-        UUID id = product.getId();
-        UpdatePriceProductDto updatePriceProductDto = new UpdatePriceProductDto(BigDecimal.valueOf(90.5));
+        UpdateProductDto updateProductDto = new UpdateProductDto(id, BigDecimal.valueOf(90.5));
+
         Assertions.assertThrows(EntityNotFoundException.class,
-                () -> mockedProductService.updateProduct(id, updatePriceProductDto));
+                () -> mockedProductService.updateProduct(updateProductDto));
 
         verify(mockedProductRepository).findById(id);
     }

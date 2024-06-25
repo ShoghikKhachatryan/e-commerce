@@ -1,6 +1,10 @@
 package com.example.ecommerce.service;
 
+import com.example.ecommerce.dto.user.CreateUserDto;
 import com.example.ecommerce.entity.User;
+import com.example.ecommerce.entity.UserDetail;
+import com.example.ecommerce.exception.EntityByGivenNameExistException;
+import com.example.ecommerce.exception.EntityNotFoundException;
 import com.example.ecommerce.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,11 +29,9 @@ class UserServiceTest {
     @InjectMocks
     private UserService mockedUserService;
 
-    private final User user = User.builder()
-            .id(UUID.fromString("08617a12-c5ab-4910-a9e6-8d50fe64ab3e"))
-            .username("Leo21")
-            .password("1234!")
-            .build();
+    private final UUID userId = UUID.fromString("08617a12-c5ab-4910-a9e6-8d50fe64ab3e");
+
+    private final User user = new User(userId, "Leo21", "1234!", new UserDetail(userId));
 
     @AfterEach
     void tearDown() {
@@ -39,40 +40,70 @@ class UserServiceTest {
 
     @Test
     void createUser() {
-        when(mockedUserRepository.save(user)).thenReturn(user);
+        String username = user.getUsername();
 
-        mockedUserService.createUser(user);
+        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword());
 
-        verify(mockedUserRepository).save(user);
+        when(mockedUserRepository.existsByUsername(username)).thenReturn(false);
+        when(mockedUserRepository.save(any(User.class))).thenReturn(user);
+
+        mockedUserService.createUser(createUserDto);
+
+        verify(mockedUserRepository).existsByUsername(username);
+        verify(mockedUserRepository).save(any(User.class));
+    }
+
+    @Test
+    void createUserByExitedName() {
+        String username = user.getUsername();
+
+        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword());
+
+        when(mockedUserRepository.existsByUsername(username)).thenReturn(true);
+
+        Assertions.assertThrows(EntityByGivenNameExistException.class,
+                () -> mockedUserService.createUser(createUserDto));
+
+        verify(mockedUserRepository).existsByUsername(username);
     }
 
     @Test
     void deleteUserById() {
-        UUID id = user.getId();
-        doNothing().when(mockedUserRepository).deleteById(id);
+        when(mockedUserRepository.existsById(userId)).thenReturn(true);
+        doNothing().when(mockedUserRepository).deleteById(userId);
 
-        mockedUserService.deleteUserById(id);
+        mockedUserService.deleteUserById(userId);
 
-        verify(mockedUserRepository).deleteById(id);
+        verify(mockedUserRepository).existsById(userId);
+        verify(mockedUserRepository).deleteById(userId);
+    }
+
+    @Test
+    void deleteUserByNotExistedId() {
+        when(mockedUserRepository.existsById(userId)).thenReturn(false);
+
+        Assertions.assertThrows(EntityNotFoundException.class,
+                () -> mockedUserService.deleteUserById(userId));
+
+        verify(mockedUserRepository).existsById(userId);
     }
 
     @Test
     void getUserByExistedId() {
-        UUID id = user.getId();
-        when(mockedUserRepository.findById(id)).thenReturn(Optional.of(user));
+        when(mockedUserRepository.findById(userId)).thenReturn(Optional.of(user));
 
-        mockedUserService.getUser(id);
+        mockedUserService.getUser(userId);
 
-        verify(mockedUserRepository).findById(id);
+        verify(mockedUserRepository).findById(userId);
     }
 
     @Test
     void getUserByNotExistedId() {
-        UUID id = user.getId();
-        Assertions.assertThrows(NoSuchElementException.class,
-                () -> mockedUserService.getUser(id));
 
-        verify(mockedUserRepository).findById(id);
+        Assertions.assertThrows(EntityNotFoundException.class,
+                () -> mockedUserService.getUser(userId));
+
+        verify(mockedUserRepository).findById(userId);
     }
 
     @Test
@@ -92,24 +123,5 @@ class UserServiceTest {
         mockedUserService.getAllUsers();
 
         verify(mockedUserRepository).findAll();
-    }
-
-    @Test
-    void updateExistedUser() {
-        when(mockedUserRepository.findById(user.getId())).thenReturn(Optional.of(user));
-        when(mockedUserRepository.save(user)).thenReturn(user);
-
-        mockedUserService.updateUser(user);
-
-        verify(mockedUserRepository).findById(user.getId());
-        verify(mockedUserRepository).save(user);
-    }
-
-    @Test
-    void updateNotExistedUser() {
-        Assertions.assertThrows(NoSuchElementException.class,
-                () ->  mockedUserService.updateUser(user));
-
-        verify(mockedUserRepository).findById(user.getId());
     }
 }

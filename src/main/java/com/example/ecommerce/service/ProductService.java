@@ -1,74 +1,70 @@
 package com.example.ecommerce.service;
 
+import com.example.ecommerce.dto.product.CreateProductDto;
 import com.example.ecommerce.dto.product.ProductDto;
-import com.example.ecommerce.dto.product.UpdatePriceProductDto;
+import com.example.ecommerce.dto.product.UpdateProductDto;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.exception.EntityByGivenNameExistException;
 import com.example.ecommerce.exception.EntityNotFoundException;
 import com.example.ecommerce.repository.ProductRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
 
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
     @Transactional
-    public ProductDto createProduct(ProductDto productDto) {
-        if (productRepository.findProductByName(productDto.getName()) != null) {
-            throw new EntityByGivenNameExistException(productDto.getName());
+    public ProductDto createProduct(CreateProductDto createProductDto) {
+        String name = createProductDto.getName();
+
+        if (productRepository.existsByName(name)) {
+            throw new EntityByGivenNameExistException(name);
         }
 
-        Product product = mapFromProductDtoToProduct(productDto);
+        Product product = mapToEntity(createProductDto);
         productRepository.save(product);
-        return productDto;
+        return mapToDto(product);
     }
 
     @Transactional
     public void deleteProductById(UUID id) {
-        getProduct(id);
+        if (!productRepository.existsById(id)) {
+            throw new EntityNotFoundException(id);
+        }
         productRepository.deleteById(id);
     }
 
     public ProductDto getProduct(UUID id) {
-        return mapFromProductToProductDto(productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id)));
-    }
-
-    public ProductDto getProduct(String name) {
-        return mapFromProductToProductDto(productRepository.findProductByName(name));
+        return mapToDto(productRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id)));
     }
 
     public List<ProductDto> getProducts() {
-        return productRepository.findAll().stream().map(product -> mapFromProductToProductDto(product)).collect(Collectors.toList());
+        return productRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     @Transactional
-    public ProductDto updateProduct(UUID id, UpdatePriceProductDto updatePriceProductDto) {
+    public ProductDto updateProduct(UpdateProductDto updateProductDto) {
+        UUID id = updateProductDto.getId();
         final var productDto = getProduct(id);
-        productRepository.updateProductPriceById(id, updatePriceProductDto.getPrice());
-        productDto.setPrice(updatePriceProductDto.getPrice());
+        productRepository.updateProductPriceById(id, updateProductDto.getPrice());
+        productDto.setPrice(updateProductDto.getPrice());
         return productDto;
     }
 
-    private ProductDto mapFromProductToProductDto(Product product) {
-        return ProductDto.builder()
-                .name(product.getName())
-                .price(product.getPrice())
-                .build();
+    private ProductDto mapToDto(Product product) {
+        return new ProductDto(product.getId(), product.getName(), product.getPrice());
     }
 
-    private Product mapFromProductDtoToProduct(ProductDto productDto) {
-        return Product.builder()
-                .id(UUID.randomUUID())
-                .name(productDto.getName())
-                .price(productDto.getPrice())
-                .build();
+    private Product mapToEntity(CreateProductDto productDto) {
+        return new Product(UUID.randomUUID(), productDto.getName(), productDto.getPrice());
     }
 }
