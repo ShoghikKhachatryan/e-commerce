@@ -2,8 +2,8 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.dto.userDetail.UpdateUserDetailDto;
 import com.example.ecommerce.dto.userDetail.UserDetailDto;
-import com.example.ecommerce.entity.UserDetail;
 import com.example.ecommerce.service.UserDetailService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +13,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/user-details")
+@RequestMapping("/users/user-details")
 public class UserDetailController {
 
-    private static final String USER_DETAIL_PATH = "/user-details";
+    private static final String USER_DETAIL_PATH = "/users/user-details";
 
-    private static final String USER_DETAIL_UUID_PATH = "/{userUuid}";
+    private static final String USER_DETAIL_UUID_PATH = "/{userId}";
 
     private final UserDetailService userDetailService;
 
@@ -34,15 +34,14 @@ public class UserDetailController {
 
     @GetMapping(USER_DETAIL_UUID_PATH)
     @ResponseStatus(HttpStatus.OK)
-    public UserDetailDto getUserDetail(@PathVariable UUID id) {
-        return userDetailService.getUserDetail(id);
+    public UserDetailDto getUserDetail(@PathVariable UUID userId) {
+        return userDetailService.getUserDetail(userId);
     }
 
     @PutMapping(USER_DETAIL_UUID_PATH)
-    public ResponseEntity<UserDetailDto> updateUserDetail(@PathVariable UUID id, @RequestBody UpdateUserDetailDto updateUserDetailDto) {
-        updateUserDetailDto.setId(id);
-        UserDetailDto userDetailDto = userDetailService.updateUserDetail(updateUserDetailDto);
-        URI location = URI.create(USER_DETAIL_PATH + "/" + userDetailDto.getId());
+    public ResponseEntity<UserDetailDto> updateUserDetail(@PathVariable UUID userId, @RequestBody @Valid UpdateUserDetailDto updateUserDetailDto) {
+        UserDetailDto userDetailDto = userDetailService.updateUserDetail(userId, updateUserDetailDto);
+        URI location = URI.create(USER_DETAIL_PATH + "/" + userId);
         return ResponseEntity.status(HttpStatus.OK).location(location).body(userDetailDto);
     }
 }

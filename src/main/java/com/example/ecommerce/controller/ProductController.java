@@ -53,8 +53,7 @@ public class ProductController {
     public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID productUuid
             , @Valid @RequestBody UpdateProductDto updateProductDto
     ) {
-        updateProductDto.setId(productUuid);
-        final var productDto = productService.updateProduct(updateProductDto);
+        final var productDto = productService.updateProduct(productUuid, updateProductDto);
         URI location = URI.create(PRODUCT_PATH + "/" + productDto.getId());
         return ResponseEntity.status(HttpStatus.OK).location(location).body(productDto);
     }

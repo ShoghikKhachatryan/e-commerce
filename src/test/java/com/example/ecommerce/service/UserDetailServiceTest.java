@@ -66,12 +66,12 @@ class UserDetailServiceTest {
     @Test
     void updateUserDetailByExsitedId() {
         String fullName = userDetail.getFullName();
-        UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(userId, fullName);
+        UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(fullName);
 
         when(mockedUserDetailRepository.findById(userId)).thenReturn(Optional.of(userDetail));
         doNothing().when(mockedUserDetailRepository).updateFullName(userId, fullName);
 
-        mockedUserDetailService.updateUserDetail(updateUserDetailDto);
+        mockedUserDetailService.updateUserDetail(userId, updateUserDetailDto);
 
         verify(mockedUserDetailRepository).updateFullName(userId, fullName);
         verify(mockedUserDetailRepository).findById(userDetail.getId());
@@ -79,10 +79,10 @@ class UserDetailServiceTest {
 
     @Test
     void updateUserDetailByNotExsitedId() {
-        UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(userId, userDetail.getFullName());
+        UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(userDetail.getFullName());
 
         Assertions.assertThrows(EntityNotFoundException.class,
-                () -> mockedUserDetailService.updateUserDetail(updateUserDetailDto));
+                () -> mockedUserDetailService.updateUserDetail(userId, updateUserDetailDto));
 
         verify(mockedUserDetailRepository).findById(userId);
     }

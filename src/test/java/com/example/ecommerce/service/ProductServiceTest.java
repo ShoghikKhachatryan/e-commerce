@@ -115,12 +115,12 @@ class ProductServiceTest {
 
     @Test
     void updateProductByExsitedId() {
-        UpdateProductDto updateProductDto = new UpdateProductDto(id, BigDecimal.valueOf(90.5));
+        UpdateProductDto updateProductDto = new UpdateProductDto(BigDecimal.valueOf(90.5));
 
         when(mockedProductRepository.findById(id)).thenReturn(Optional.of(product));
         doNothing().when(mockedProductRepository).updateProductPriceById(id, updateProductDto.getPrice());
 
-        mockedProductService.updateProduct(updateProductDto);
+        mockedProductService.updateProduct(id, updateProductDto);
 
         verify(mockedProductRepository).updateProductPriceById(id, updateProductDto.getPrice());
         verify(mockedProductRepository).findById(product.getId());
@@ -128,10 +128,10 @@ class ProductServiceTest {
 
     @Test
     void updateProductByNotExistedId() {
-        UpdateProductDto updateProductDto = new UpdateProductDto(id, BigDecimal.valueOf(90.5));
+        UpdateProductDto updateProductDto = new UpdateProductDto(BigDecimal.valueOf(90.5));
 
         Assertions.assertThrows(EntityNotFoundException.class,
-                () -> mockedProductService.updateProduct(updateProductDto));
+                () -> mockedProductService.updateProduct(id, updateProductDto));
 
         verify(mockedProductRepository).findById(id);
     }

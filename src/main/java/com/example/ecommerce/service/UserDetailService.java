@@ -31,13 +31,12 @@ public class UserDetailService {
     }
 
     @Transactional
-    public UserDetailDto updateUserDetail(UpdateUserDetailDto updateUserDetailDto) {
-        UUID id = updateUserDetailDto.getId();
+    public UserDetailDto updateUserDetail(UUID id, UpdateUserDetailDto updateUserDetailDto) {
 
-        String fullName = updateUserDetailDto.getFullName();
 
         UserDetailDto userDetailDto = getUserDetail(id);
 
+        String fullName = updateUserDetailDto.getFullName();
         userDetailRepository.updateFullName(id, fullName);
 
         userDetailDto.setFullName(fullName);

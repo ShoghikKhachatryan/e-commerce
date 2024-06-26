@@ -52,8 +52,8 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDto updateProduct(UpdateProductDto updateProductDto) {
-        UUID id = updateProductDto.getId();
+    public ProductDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
+
         final var productDto = getProduct(id);
         productRepository.updateProductPriceById(id, updateProductDto.getPrice());
         productDto.setPrice(updateProductDto.getPrice());

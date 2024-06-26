@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateUserDto {
 
-    @Column(unique = true)
     @NotBlank
     private String username;
 

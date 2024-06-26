@@ -82,6 +82,6 @@ public class UserService {
     private UserDto mapToDto(User user) {
         UserDetailDto userDetailDto = new UserDetailDto(user.getId(), user.getUserDetail().getFullName());
 
-        return new UserDto(user.getId(), user.getUsername(), user.getPassword(), userDetailDto);
+        return new UserDto(user.getId(), user.getUsername(), user.getPassword());
     }
 }

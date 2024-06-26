@@ -73,7 +73,7 @@ public class ProductControllerTest extends BaseControllerTest {
 
     @Test
     public void updatePriceProductsByValidIdReturnsExpectedResult() throws Exception {
-        UpdateProductDto updateProductDto = new UpdateProductDto(id, BigDecimal.valueOf(9.4));
+        UpdateProductDto updateProductDto = new UpdateProductDto(BigDecimal.valueOf(9.4));
 
         final String updateJsonContent = "{"+
                 "\"name\": \"TV\"," +
@@ -82,7 +82,7 @@ public class ProductControllerTest extends BaseControllerTest {
 
         productDto.setPrice(updateProductDto.getPrice());
 
-        doReturn(productDto).when(productService).updateProduct(updateProductDto);
+        doReturn(productDto).when(productService).updateProduct(id, updateProductDto);
 
         mockMvc.perform(put("/products/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,14 +90,14 @@ public class ProductControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(header().string("Location", "/products/" + id))
                 .andExpect(content().json(updateJsonContent));
-        verify(productService).updateProduct(updateProductDto);
+        verify(productService).updateProduct(id, updateProductDto);
     }
 
     @Test
     public void updatePriceProductByGivenInValidIdReturnsExpectedResult() throws Exception {
-        UpdateProductDto updateProductDto = new UpdateProductDto(id, BigDecimal.valueOf(9.4));
+        UpdateProductDto updateProductDto = new UpdateProductDto(BigDecimal.valueOf(9.4));
 
-        doThrow(new EntityNotFoundException(id)).when(productService).updateProduct(updateProductDto);
+        doThrow(new EntityNotFoundException(id)).when(productService).updateProduct(id, updateProductDto);
 
         mockMvc.perform(put("/products/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +109,7 @@ public class ProductControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.errorType").value("NOT_FOUND"))
                 .andExpect(jsonPath("$.message").value("Entity with UUID '" + id + "' not found"));
 
-        verify(productService).updateProduct(updateProductDto);
+        verify(productService).updateProduct(id, updateProductDto);
     }
 
     @Test

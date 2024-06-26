@@ -18,7 +18,7 @@ public class UserController {
 
     private static final String USER_PATH = "/users";
 
-    private static final String USER_UUID_PATH = "/{userUuid}";
+    private static final String USER_UUID_PATH = "/{userId}";
 
     private final UserService userService;
 
@@ -43,13 +43,13 @@ public class UserController {
 
     @GetMapping(USER_UUID_PATH)
     @ResponseStatus(HttpStatus.OK)
-    public UserDto getUser(@PathVariable UUID id) {
-        return userService.getUser(id);
+    public UserDto getUser(@PathVariable UUID userId) {
+        return userService.getUser(userId);
     }
 
     @DeleteMapping(USER_UUID_PATH)
     @ResponseStatus(HttpStatus.OK)
-    public void deleteUser(@PathVariable UUID userUuid) {
-        userService.deleteUserById(userUuid);
+    public void deleteUser(@PathVariable UUID userId) {
+        userService.deleteUserById(userId);
     }
 }

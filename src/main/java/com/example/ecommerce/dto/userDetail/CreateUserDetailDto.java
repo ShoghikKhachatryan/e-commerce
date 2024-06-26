@@ -1,5 +1,6 @@
 package com.example.ecommerce.dto.userDetail;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,6 @@ import lombok.ToString;
 @ToString
 public class CreateUserDetailDto {
 
+    @NotBlank
     private String fullName;
 }

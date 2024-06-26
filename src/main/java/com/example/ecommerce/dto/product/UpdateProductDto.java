@@ -15,9 +15,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UpdateProductDto {
 
-    @Id
-    private UUID id;
-
     @NotNull
     @Min(0)
     private BigDecimal price;

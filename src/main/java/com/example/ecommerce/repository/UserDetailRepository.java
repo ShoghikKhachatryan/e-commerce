@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface UserDetailRepository extends JpaRepository<UserDetail, UUID> {
     @Modifying
-    @Query("update UserDetail u set u.fullName =: full_name where u.id =: id")
+    @Query("update UserDetail u set u.fullName = :fullName where u.id = :id")
     void updateFullName(UUID id, String fullName);
 }
