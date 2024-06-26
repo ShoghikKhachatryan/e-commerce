@@ -1,6 +1,5 @@
 package com.example.ecommerce.dto.userDetail;
 
-import com.example.ecommerce.entity.User;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,4 +17,8 @@ public class UserDetailDto {
 
     @NotNull
     private String fullName;
+
+    public UserDetailDto(UUID id) {
+        this.id = id;
+    }
 }

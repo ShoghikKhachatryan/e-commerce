@@ -6,7 +6,7 @@ CREATE TABLE users (
 
 CREATE TABLE user_detail (
     user_id UUID PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

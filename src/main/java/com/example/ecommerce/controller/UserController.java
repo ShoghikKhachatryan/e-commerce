@@ -31,7 +31,7 @@ public class UserController {
         final UserDto userDto = userService.createUser(createUserDto);
 
         // Assuming the location URI is determined by the product ID or some other logic
-        URI location = URI.create(USER_PATH + "/" + userDto.getId());
+        URI location = URI.create(USER_PATH + "/"+ userDto.getId());
         return ResponseEntity.created(location).body(userDto);
     }
 

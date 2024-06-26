@@ -1,7 +1,6 @@
 package com.example.ecommerce.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.UUID;
@@ -9,8 +8,21 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_detail")
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class UserDetail {
+
+    @Id
+    @Column(name="user_id")
+    private UUID id;
+
+    private String fullName;
+
+    // @MapsId maps to the parent entity primary key
+    // optional = false the userDetail entity cannot be persisted when it's associated user is null.
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public UserDetail(UUID id) {
         this.id = id;
@@ -20,14 +32,11 @@ public class UserDetail {
         this.id = id;
     }
 
-    @Id
-    @Column(name="user_id")
-    private UUID id;
-
-    @Column(nullable = false)
-    private String fullName;
-
-    @OneToOne(mappedBy = "userDetail")
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Override
+    public String toString() {
+        return "UserDetail{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                '}';
+    }
 }

@@ -31,6 +31,7 @@ public class UserService {
         if (isExistUser(username)) {
             throw new EntityByGivenNameExistException(username);
         }
+
         User user = mapToEntity(createUserDto);
         userRepository.save(user);
         return mapToDto(user);
@@ -66,12 +67,21 @@ public class UserService {
 
     private User mapToEntity(CreateUserDto createUserDto) {
         UUID userId = UUID.randomUUID();
-        UserDetail userDetail = new UserDetail(userId);
-        return new User(userId,createUserDto.getUsername(), createUserDto.getPassword(), userDetail);
+
+        UserDetail userDetail = new UserDetail();
+        if (createUserDto.getCreateUserDetailDto() != null) {
+            String fullName =  createUserDto.getCreateUserDetailDto().getFullName();
+            userDetail.setFullName(fullName);
+        }
+
+        User user = new User(userId, createUserDto.getUsername(), createUserDto.getPassword(), userDetail);
+
+        return user;
     }
 
     private UserDto mapToDto(User user) {
-        UserDetailDto userDetailDto = new UserDetailDto(user.getUserDetail().getId(), user.getUserDetail().getFullName());
+        UserDetailDto userDetailDto = new UserDetailDto(user.getId(), user.getUserDetail().getFullName());
+
         return new UserDto(user.getId(), user.getUsername(), user.getPassword(), userDetailDto);
     }
 }

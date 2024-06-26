@@ -1,6 +1,6 @@
 package com.example.ecommerce.dto.user;
 
-import com.example.ecommerce.dto.userDetail.UserDetailDto;
+import com.example.ecommerce.dto.userDetail.CreateUserDetailDto;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -18,4 +18,11 @@ public class CreateUserDto {
 
     @NotBlank
     private String password;
+
+    CreateUserDetailDto createUserDetailDto;
+
+    public CreateUserDto(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

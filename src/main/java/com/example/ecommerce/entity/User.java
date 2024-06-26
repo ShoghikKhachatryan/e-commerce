@@ -10,7 +10,6 @@ import java.util.UUID;
 @Table(name = "users")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class User {
 
     @Id
@@ -23,13 +22,30 @@ public class User {
     @NotBlank
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    //mappedBy value points to the relationship owner
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
     private UserDetail userDetail;
 
-    public User(UUID userId, String username, String password) {
+    public User(UUID id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
+
+        this.userDetail = new UserDetail();
+        this.userDetail.setUser(this);
+    }
+
+    public User(UUID id, String username, String password, UserDetail userDetail) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+
+        if (userDetail == null) {
+            userDetail = new UserDetail();
+        }
+
+        userDetail.setUser(this);
+        this.userDetail = userDetail;
     }
 }
