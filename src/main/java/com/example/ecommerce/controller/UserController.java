@@ -30,7 +30,6 @@ public class UserController {
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid CreateUserDto createUserDto) {
         final UserDto userDto = userService.createUser(createUserDto);
 
-        // Assuming the location URI is determined by the product ID or some other logic
         URI location = URI.create(USER_PATH + "/"+ userDto.getId());
         return ResponseEntity.created(location).body(userDto);
     }
@@ -38,7 +37,7 @@ public class UserController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserDto> getUsers() {
-        return userService.getAllUsers();
+        return userService.getUsers();
     }
 
     @GetMapping(USER_UUID_PATH)

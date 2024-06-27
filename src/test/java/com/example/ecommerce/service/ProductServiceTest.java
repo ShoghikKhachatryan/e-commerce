@@ -105,7 +105,7 @@ class ProductServiceTest {
     }
 
     @Test
-    void getAllProducts() {
+    void getProducts() {
         when(mockedProductRepository.findAll()).thenReturn(List.of(product));
 
         mockedProductService.getProducts();

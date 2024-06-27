@@ -26,14 +26,8 @@ public class UserDetailService {
         return mapToDto(userDetail);
     }
 
-    public List<UserDetailDto> getAllUserDetails() {
-        return userDetailRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
-    }
-
     @Transactional
     public UserDetailDto updateUserDetail(UUID id, UpdateUserDetailDto updateUserDetailDto) {
-
-
         UserDetailDto userDetailDto = getUserDetail(id);
 
         String fullName = updateUserDetailDto.getFullName();

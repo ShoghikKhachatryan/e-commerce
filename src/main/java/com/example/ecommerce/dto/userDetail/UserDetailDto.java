@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserDetailDto {
 
     @NotNull
@@ -17,8 +17,4 @@ public class UserDetailDto {
 
     @NotNull
     private String fullName;
-
-    public UserDetailDto(UUID id) {
-        this.id = id;
-    }
 }

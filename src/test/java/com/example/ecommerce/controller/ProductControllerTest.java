@@ -66,7 +66,7 @@ public class ProductControllerTest extends BaseControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.errorType").value("ALREADY_ENTITY_EXIST"))
+                .andExpect(jsonPath("$.errorType").value("ENTITY_ALREADY_EXIST"))
                 .andExpect(jsonPath("$.message").value("Entity with name '" + name + "' already exist."));
         verify(productService).createProduct(createProductDto);
     }
@@ -88,7 +88,6 @@ public class ProductControllerTest extends BaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateProductDto)))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Location", "/products/" + id))
                 .andExpect(content().json(updateJsonContent));
         verify(productService).updateProduct(id, updateProductDto);
     }

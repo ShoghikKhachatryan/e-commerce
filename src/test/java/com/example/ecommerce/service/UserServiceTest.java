@@ -1,6 +1,7 @@
 package com.example.ecommerce.service;
 
 import com.example.ecommerce.dto.user.CreateUserDto;
+import com.example.ecommerce.dto.userDetail.CreateUserDetailDto;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.entity.UserDetail;
 import com.example.ecommerce.exception.EntityByGivenNameExistException;
@@ -42,7 +43,37 @@ class UserServiceTest {
     void createUser() {
         String username = user.getUsername();
 
-        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword());
+        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword(), null);
+
+        when(mockedUserRepository.existsByUsername(username)).thenReturn(false);
+        when(mockedUserRepository.save(any(User.class))).thenReturn(user);
+
+        mockedUserService.createUser(createUserDto);
+
+        verify(mockedUserRepository).existsByUsername(username);
+        verify(mockedUserRepository).save(any(User.class));
+    }
+
+    @Test
+    void createUserWithUserDetail() {
+        User user = new User(userId, "Leo21", "1234!", null);
+        String username = user.getUsername();
+        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword(), null);
+
+        when(mockedUserRepository.existsByUsername(username)).thenReturn(false);
+        when(mockedUserRepository.save(any(User.class))).thenReturn(user);
+
+        mockedUserService.createUser(createUserDto);
+
+        verify(mockedUserRepository).existsByUsername(username);
+        verify(mockedUserRepository).save(any(User.class));
+    }
+
+    @Test
+    void createUserWithCreateUserDetail() {
+        String username = user.getUsername();
+
+        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword(), new CreateUserDetailDto("Bob"));
 
         when(mockedUserRepository.existsByUsername(username)).thenReturn(false);
         when(mockedUserRepository.save(any(User.class))).thenReturn(user);
@@ -57,7 +88,7 @@ class UserServiceTest {
     void createUserByExitedName() {
         String username = user.getUsername();
 
-        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword());
+        CreateUserDto createUserDto = new CreateUserDto(username, user.getPassword(), null);
 
         when(mockedUserRepository.existsByUsername(username)).thenReturn(true);
 
@@ -99,7 +130,6 @@ class UserServiceTest {
 
     @Test
     void getUserByNotExistedId() {
-
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> mockedUserService.getUser(userId));
 
@@ -107,10 +137,10 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers() {
+    void getUsers() {
         when(mockedUserRepository.findAll()).thenReturn(List.of(user));
 
-        mockedUserService.getAllUsers();
+        mockedUserService.getUsers();
 
         verify(mockedUserRepository).findAll();
     }

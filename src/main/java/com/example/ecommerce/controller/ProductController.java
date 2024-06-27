@@ -31,7 +31,6 @@ public class ProductController {
     public ResponseEntity<ProductDto> createProduct(@RequestBody @Valid CreateProductDto createProductDto) {
         final var productDto = productService.createProduct(createProductDto);
 
-        // Assuming the location URI is determined by the product ID or some other logic
         URI location = URI.create(PRODUCT_PATH + "/" + productDto.getId());
         return ResponseEntity.created(location).body(productDto);
     }
@@ -49,12 +48,13 @@ public class ProductController {
     }
 
     @PutMapping(PRODUCT_UUID_PATH)
-    public ResponseEntity<ProductDto> updateProduct(@PathVariable UUID productUuid
-            , @Valid @RequestBody UpdateProductDto updateProductDto
+    @ResponseStatus(HttpStatus.OK)
+    public ProductDto updateProduct(
+            @PathVariable UUID productUuid,
+            @Valid @RequestBody UpdateProductDto updateProductDto
     ) {
         final var productDto = productService.updateProduct(productUuid, updateProductDto);
-        URI location = URI.create(PRODUCT_PATH + "/" + productDto.getId());
-        return ResponseEntity.status(HttpStatus.OK).location(location).body(productDto);
+        return productDto;
     }
 
     @DeleteMapping(PRODUCT_UUID_PATH)

@@ -27,18 +27,18 @@ public class UserService {
     public UserDto createUser(CreateUserDto createUserDto) {
         String username = createUserDto.getUsername();
 
-        if (isExistUser(username)) {
+        if (isUserExists(username)) {
             throw new EntityByGivenNameExistException(username);
         }
 
         User user = mapToEntity(createUserDto);
-        userRepository.save(user);
+        user = userRepository.save(user);
         return mapToDto(user);
     }
 
     @Transactional
     public void deleteUserById(UUID id) {
-        if (!isExistUser(id)) {
+        if (!isUserExists(id)) {
             throw new EntityNotFoundException(id);
         }
         userRepository.deleteById(id);
@@ -48,15 +48,15 @@ public class UserService {
         return mapToDto(userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id)));
     }
 
-    public List<UserDto> getAllUsers() {
+    public List<UserDto> getUsers() {
         return userRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    private boolean isExistUser(String username) {
+    private boolean isUserExists(String username) {
         return userRepository.existsByUsername(username);
     }
 
-    private boolean isExistUser(UUID id) {
+    private boolean isUserExists(UUID id) {
         return userRepository.existsById(id);
     }
 
@@ -69,13 +69,10 @@ public class UserService {
             userDetail.setFullName(fullName);
         }
 
-        User user = new User(userId, createUserDto.getUsername(), createUserDto.getPassword(), userDetail);
-
-        return user;
+        return new User(userId, createUserDto.getUsername(), createUserDto.getPassword(), userDetail);
     }
 
     private UserDto mapToDto(User user) {
-
-        return new UserDto(user.getId(), user.getUsername(), user.getPassword());
+        return new UserDto(user.getId(), user.getUsername());
     }
 }

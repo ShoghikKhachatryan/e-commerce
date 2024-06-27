@@ -2,6 +2,7 @@ package com.example.ecommerce.controller;
 
 import com.example.ecommerce.dto.user.CreateUserDto;
 import com.example.ecommerce.dto.user.UserDto;
+import com.example.ecommerce.dto.userDetail.CreateUserDetailDto;
 import com.example.ecommerce.exception.EntityByGivenNameExistException;
 import com.example.ecommerce.exception.EntityNotFoundException;
 import com.example.ecommerce.service.UserService;
@@ -28,15 +29,14 @@ public class UserControllerTest extends BaseControllerTest {
 
     private final String jsonContent = "{ " +
             "\"id\": \"8eafdf29-ef2e-4872-9a27-83bee1f3d92c\", " +
-            "\"username\": \"Tom\"," +
-            "\"password\": \"123\"" +
+            "\"username\": \"Tom\"" +
             "}";
 
     private final String USER_PATH = "/users";
 
     private final String USER_PATH_ID = "/users/" + id;
 
-    private final UserDto userDto = new UserDto(id, "Tom", "123");
+    private final UserDto userDto = new UserDto(id, "Tom");
 
     @AfterEach
     public void teamDown() {
@@ -44,17 +44,17 @@ public class UserControllerTest extends BaseControllerTest {
     }
 
     @Test
-    public void getAllUsers() throws Exception {
+    public void getUsers() throws Exception {
         final String jsonContentList = "[" + jsonContent + "]";
         List<UserDto> userDtoList = List.of(userDto);
 
-        when(userService.getAllUsers()).thenReturn(userDtoList);
+        when(userService.getUsers()).thenReturn(userDtoList);
 
         mockMvc.perform(get(USER_PATH))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonContentList));
 
-        verify(userService).getAllUsers();
+        verify(userService).getUsers();
     }
 
     @Test
@@ -109,13 +109,13 @@ public class UserControllerTest extends BaseControllerTest {
 
     @Test
     public void createUserByValidNameReturnsExpectedResult() throws Exception {
-        CreateUserDto createUserDto = new CreateUserDto("Tom", "123");
+        CreateUserDto createUserDto = new CreateUserDto("Tom", "123", null);
 
         doReturn(userDto).when(userService).createUser(createUserDto);
 
         mockMvc.perform(post(USER_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
+                        .content(objectMapper.writeValueAsString(createUserDto)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", USER_PATH_ID))
                 .andExpect(content().json(jsonContent));
@@ -124,20 +124,37 @@ public class UserControllerTest extends BaseControllerTest {
     }
 
     @Test
+    public void createUserByValidNameAndWithUserDetailReturnsExpectedResult() throws Exception {
+        CreateUserDto createUserDto = new CreateUserDto("Tom", "123", new CreateUserDetailDto("Jon"));
+
+        doReturn(userDto).when(userService).createUser(createUserDto);
+
+        mockMvc.perform(post(USER_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createUserDto)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", USER_PATH_ID))
+                .andExpect(content().json(jsonContent));
+
+        verify(userService).createUser(createUserDto);
+    }
+
+
+    @Test
     public void createUserByInExistNameReturnsExpectedResult() throws Exception {
-        CreateUserDto createUserDto = new CreateUserDto("Tom", "123");
+        CreateUserDto createUserDto = new CreateUserDto("Tom", "123", null);
 
         doThrow(new EntityByGivenNameExistException(createUserDto.getUsername())).when(userService)
                 .createUser(createUserDto);
 
         mockMvc.perform(post(USER_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
+                        .content(objectMapper.writeValueAsString(createUserDto)))
                 .andExpect(status().is4xxClientError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.timestamp").exists())
                 .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.errorType").value("ALREADY_ENTITY_EXIST"))
+                .andExpect(jsonPath("$.errorType").value("ENTITY_ALREADY_EXIST"))
                 .andExpect(jsonPath("$.message").value("Entity with name '" + createUserDto.getUsername()
                         + "' already exist."));
 

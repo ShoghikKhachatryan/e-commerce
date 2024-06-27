@@ -55,15 +55,6 @@ class UserDetailServiceTest {
     }
 
     @Test
-    void getAllUserDetails() {
-        when(mockedUserDetailRepository.findAll()).thenReturn(List.of(userDetail));
-
-        mockedUserDetailService.getAllUserDetails();
-
-        verify(mockedUserDetailRepository).findAll();
-    }
-
-    @Test
     void updateUserDetailByExsitedId() {
         String fullName = userDetail.getFullName();
         UpdateUserDetailDto updateUserDetailDto = new UpdateUserDetailDto(fullName);

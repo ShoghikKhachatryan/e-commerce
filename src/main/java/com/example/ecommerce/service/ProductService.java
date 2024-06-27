@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
+
     private final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
@@ -31,7 +32,7 @@ public class ProductService {
         }
 
         Product product = mapToEntity(createProductDto);
-        productRepository.save(product);
+        product = productRepository.save(product);
         return mapToDto(product);
     }
 

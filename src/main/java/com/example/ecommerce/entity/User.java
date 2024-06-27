@@ -7,9 +7,9 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
-@Data
+@Getter
 @NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -26,15 +26,6 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     @PrimaryKeyJoinColumn
     private UserDetail userDetail;
-
-    public User(UUID id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-
-        this.userDetail = new UserDetail();
-        this.userDetail.setUser(this);
-    }
 
     public User(UUID id, String username, String password, UserDetail userDetail) {
         this.id = id;

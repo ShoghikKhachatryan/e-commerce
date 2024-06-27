@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -28,8 +27,6 @@ public class UserDetailControllerTest extends BaseControllerTest {
             "\"fullName\": \"Tom\"" +
             "}";
 
-    private final String USER_DETAIL_PATH = "/users/user-details";
-
     private final String USER_DETAIL_PATH_ID = "/users/user-details/" + id;
 
     private final UserDetailDto userDetailDto = new UserDetailDto(id, "Tom");
@@ -37,20 +34,6 @@ public class UserDetailControllerTest extends BaseControllerTest {
     @AfterEach
     public void teamDown() {
         verifyNoMoreInteractions(userDetailService);
-    }
-
-    @Test
-    public void getAllUserDetailsReturnsExpectedResult() throws Exception {
-        final String jsonContentList = "[" + jsonContent + "]";
-
-        List <UserDetailDto> userDetailDtoList = List.of(userDetailDto);
-        when(userDetailService.getAllUserDetails()).thenReturn(userDetailDtoList);
-
-        mockMvc.perform(get(USER_DETAIL_PATH))
-                .andExpect(status().isOk())
-                .andExpect(content().json(jsonContentList));
-
-        verify(userDetailService).getAllUserDetails();
     }
 
     @Test
@@ -89,7 +72,6 @@ public class UserDetailControllerTest extends BaseControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateUserDetailDto)))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Location", USER_DETAIL_PATH_ID))
                 .andExpect(content().json(jsonContent));
 
         verify(userDetailService).updateUserDetail(id, updateUserDetailDto);

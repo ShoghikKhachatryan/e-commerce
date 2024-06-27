@@ -30,13 +30,7 @@ public class UserDetail {
 
     public UserDetail(UUID id, String fullName) {
         this.id = id;
+        this.fullName = fullName;
     }
 
-    @Override
-    public String toString() {
-        return "UserDetail{" +
-                "id=" + id +
-                ", fullName='" + fullName + '\'' +
-                '}';
-    }
 }
