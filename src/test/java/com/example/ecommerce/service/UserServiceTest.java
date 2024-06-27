@@ -107,16 +107,6 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserByName() {
-        String username = user.getUsername();
-        when(mockedUserRepository.findUserByUsername(username)).thenReturn(user);
-
-        mockedUserService.getUser(username);
-
-        verify(mockedUserRepository).findUserByUsername(username);
-    }
-
-    @Test
     void getAllUsers() {
         when(mockedUserRepository.findAll()).thenReturn(List.of(user));
 

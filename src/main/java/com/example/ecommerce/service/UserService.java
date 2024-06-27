@@ -2,7 +2,6 @@ package com.example.ecommerce.service;
 
 import com.example.ecommerce.dto.user.CreateUserDto;
 import com.example.ecommerce.dto.user.UserDto;
-import com.example.ecommerce.dto.userDetail.UserDetailDto;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.entity.UserDetail;
 import com.example.ecommerce.exception.EntityByGivenNameExistException;
@@ -49,10 +48,6 @@ public class UserService {
         return mapToDto(userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(id)));
     }
 
-    public UserDto getUser(String username) {
-        return mapToDto(userRepository.findUserByUsername(username));
-    }
-
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
@@ -80,7 +75,6 @@ public class UserService {
     }
 
     private UserDto mapToDto(User user) {
-        UserDetailDto userDetailDto = new UserDetailDto(user.getId(), user.getUserDetail().getFullName());
 
         return new UserDto(user.getId(), user.getUsername(), user.getPassword());
     }

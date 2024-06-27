@@ -1,7 +1,6 @@
 package com.example.ecommerce.dto.user;
 
 import com.example.ecommerce.dto.userDetail.CreateUserDetailDto;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;

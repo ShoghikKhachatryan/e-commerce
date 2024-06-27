@@ -1,8 +1,5 @@
 package com.example.ecommerce.dto.user;
 
-import com.example.ecommerce.dto.userDetail.UserDetailDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
