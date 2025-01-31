@@ -1,4 +1,4 @@
-package com.example.e_commerce;
+package com.example.ecommerce;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -6,8 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class ECommerceApplicationTests {
 
-	@Test
+	@Test // TODO HK: do you understand why this test is needed?
 	void contextLoads() {
 	}
-
 }
